@@ -1,0 +1,34 @@
+1. Connect as SYSDBA
+Privileges: SYSDBA is the highest privilege level in Oracle Database. It allows you to perform any administrative task:
+    Creating and managing databases
+    Performing database recovery
+    Managing users and roles
+    Altering or dropping the database
+    Performing high-level operations that require complete control over the database.
+Usage: This role is often used for critical administrative tasks and for database maintenance operations.
+
+2. Connect as SYSOPER
+Privileges: SYSOPER has a lower level of privileges compared to SYSDBA. It allows for certain operational tasks, such as:
+    Starting and stopping the database
+    Performing backup and recovery operations
+    Managing instance parameters
+    Performing routine maintenance and monitoring
+Usage: This role is suitable for users who need to perform operational tasks but do not require the full administrative privileges of SYSDBA.
+
+3. Connect as a Normal User
+Privileges: Normal users are granted specific privileges and roles based on their assigned roles. They do not have administrative privileges and can only perform tasks permitted by their user roles.
+Usage: This role is used for regular database operations such as querying, updating data, and executing stored procedures.
+
+4. Summary
+SYSDBA: Full administrative privileges for all database operations.
+SYSOPER: Limited administrative privileges for operational tasks.
+Normal User: Standard access based on user roles and privileges.
+
+SYSDBA Account:
+sys/123
+
+SYSOPER Account:
+sys/123
+
+Normal Account:
+system/123

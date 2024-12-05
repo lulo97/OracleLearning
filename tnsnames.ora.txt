@@ -1,0 +1,39 @@
+XE =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = LAPTOP-AFFLMIO3)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = XE)
+    )
+  )
+
+EXTPROC_CONNECTION_DATA =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC_FOR_XE))
+    )
+    (CONNECT_DATA =
+      (SID = PLSExtProc)
+      (PRESENTATION = RO)
+    )
+  )
+
+ORACLR_CONNECTION_DATA = 
+  (DESCRIPTION = 
+    (ADDRESS_LIST = 
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC_FOR_XE)) 
+    ) 
+    (CONNECT_DATA = 
+      (SID = CLRExtProc) 
+      (PRESENTATION = RO) 
+    ) 
+  ) 
+
+tnsnames.ora is used to defined network services for database connection.
+- Services: XE, EXTPROC_CONNECTION_DATA, ORACLR_CONNECTION_DATA
+
+DESCRIPTION: Provide detail about connection.
+PROTOCOL = TCP: Allow for both local, remote connection.
+SERVER = DEDICATED: Identfy this is dedicated server for handling client request.
+
+PRESENTATION = RO: This indicates that the presentation is Read-Only (RO). This typically means no transactional changes are made during external procedure execution, as it just interacts with external libraries.

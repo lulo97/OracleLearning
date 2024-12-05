@@ -1,0 +1,27 @@
+Oracle Architechture consists of 3 components:
+- Process (similar to main process CPU of computer)
+- Memory (similar to memory RAM, ROM... of computer)
+- Storage (similar to physical disk of computer)
+
+Oracle Instance = Process + Memory
+- Storage can have mutiple databases and mutiple instances
+- One instance can modify only one database
+
+Memory = System Global Area (SGA) + Program Global Area (PGA)
+- SGA = Memory for mutiple session can share data 
+- PGA = Memory for only paticular session can use
+- A same query can take 10 second first time run and 1 second secon time run because it already store in SGA in first time
+
+Process = User process + Server process + Background process
+- User process is created when client tool (SQL Navigator) connect to server through Listener
+- A listener is a process on server side, taking user process data and ship it to Server process
+- Server process once establish connection with user process (client process) it will skip listener and directly communicate.
+- A dedicated server is server process that connect with one client process only
+- A shared server is server process that connect with mutiple client
+- Background process is an independent process (not like server process and user process need each other) that handle database operations like ensure data integrity, performance, recover...
+    + DBWn = Database Writer Process: Write data from memory (SGA, PGA) to physical disk 
+    + CKPT = Checkpoint Process: Singnaling DBWn to write data
+    + LGWR = Log Writer Process: Write log
+    + ARCn = Archiver Process: Backup/Recover log file
+
+DBWn 

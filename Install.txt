@@ -1,0 +1,41 @@
+Download link: https://www.appservgrid.com/coherence/downxe.html
+
+When install Oracle database using install exe file, set password is used for account username = system
+- Install default folder: C:\oraclexe
+
+Using Oracle 10g EX for low spec laptop windows.
+
+Oracle service inside services.msc:
+- OracleServiceXE: The main database service for Oracle 10g XE.
+- OracleXETNSListener: The listener service, which is responsible for handling client connections to the database.
+- OracleJobSchedulerXE: Handles scheduled jobs and tasks within the database.
+- OracleMTSRecoveryService: Transaction/Commit/Rollback for Windows
+- OracleXECLRAgent: Allow Oracle to interact with CLR (Common Language Runtime - a part of .NET framework)
+
+Web-based Interface: http://127.0.0.1:8080/apex
+- Login using username: system, password: 123
+
+SQLPlus in CMD of Windows:
+- Login using username: system, password: 123
+    C:\Users\admin>sqlplus
+    SQL*Plus: Release 10.2.0.1.0 - Production on Fri Sep 13 22:51:07 2024
+    Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+    Enter user-name: SYSTEM
+    Enter password: 123
+
+Install Orace Client for 10g EX:
+- URL: https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+- Download instantclient-basic-win64-10.2.0.5
+- Follow install instruction on web
+
+Install Sql Navigatior:
+- Requirement: Oracle Database, Oracle Client
+- Make a new session by Oracle Logon
+    + Select Home/Client by folder name of oracle client in instruction
+    + Connection Parameters: Direct method 
+        + Host: localhost (if install orcale database in current computer, else use server ip like 192.168.x.x)
+        + Port: 1521 (default port, else find listener.ora file for specific name)
+        + Service Name: XE (find tnsnames.ora file for specific name)
+
+
+

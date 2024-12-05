@@ -1,0 +1,2 @@
+ORA-12514: TNS:listener does not currently know of service requested in connect descriptor
+- Fix: ServiceName is XE not EX

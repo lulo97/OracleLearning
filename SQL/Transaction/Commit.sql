@@ -1,0 +1,17 @@
+SET AUTOCOMMIT OFF;
+
+SELECT * FROM users;
+
+INSERT INTO users
+VALUES (5, 'User 5', 25);
+
+COMMIT;
+
+SELECT * FROM users;
+
+INSERT INTO users
+VALUES (6, 'User 6', 26);
+
+ROLLBACK;
+
+SELECT * FROM users;

@@ -1,0 +1,15 @@
+Oracle v2 (1979): First commercially available SQL-based RDBMS.
+Oracle v3 (1983): Introduced concurrency control and scalability.
+Oracle v4 (1984): Added multiversion read consistency.
+Oracle v5 (1985): First support for client/server computing.
+Oracle v6 (1988): Added row-level locking and online backup and recovery.
+Oracle 7 (1992): Introduced PL/SQL stored procedures and triggers.
+Oracle 8 (1997): Introduced Recovery Manager (RMAN), partitioning, and Data Guard for disaster recovery.
+Oracle 9i (2001): Introduced Real Application Clusters (RAC) and Oracle XML DB.
+Oracle 10g (2003): Focused on grid computing, Automatic Storage Management (ASM), and Flashback Database.
+Oracle 11g (2007): Introduced features like Active Data Guard and Secure Files.
+Oracle 12c (2013): Brought the concept of cloud databases and multitenant architecture.
+Oracle 18c (2018): Introduced autonomous databases.
+Oracle 19c (2019): Added automatic indexing and real-time statistics.
+
+Oracle version jump from 12c to 18c is to match year and version release (18 with 2018)

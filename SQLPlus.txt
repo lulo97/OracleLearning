@@ -1,0 +1,2 @@
+Error when login: ORA-12560: TNS:protocol adapter error
+- Solution: Reinstall oracle

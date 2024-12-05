@@ -1,0 +1,11 @@
+SQL is declarative language.
+
+Declarative language is programming paradigm that declare what result would look like.
+- Example: SQL, ORM libraries (LINQ)
+
+Imperative language is programming paradigm that show all step to get the result.
+- Example: C, Python
+
+Declaretive is more simpler.
+Declaretive is just another abstraction builded up by imperative code.
+

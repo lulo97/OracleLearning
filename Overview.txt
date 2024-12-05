@@ -1,0 +1,32 @@
+Oracle is enterprise-level database
+Oracle designed for high-performance application
+Oracle contains server-client architechture
+Oracle is more complex than MySQL
+
+Core component of Orace Database:
+- Server: Place where actually data is store
+    + Database: Physical disk to store data
+    + Instance: A set or Oracle processes (DBWR, LGWR), memories (System Global Area) to manage database operations
+    + A physical disk on server can have mutiple databases and mutiple instances
+    + But one instance can only modify one database
+- Client: Tools or applications like SQL*Plus, Sql Developer, Sql Navigator, Backend projects...
+    + Oracle have own network protocal (SQL*Net or Oracle Net Services) to communication between server and client
+    + Client tools must have to understand that network protocal
+    + This design imply networking is a seperate layer. Unlike like MySQL, SQLServer the networking part is handle simplier.
+
+Oracle Listener is a background process that listen to client request.
+Oracle Listener is placed inside server.
+Orcale Listener configuration by listener.ora file.
+
+Transparent Network Substrate (TNS): A protocal to handle server-client communication.
+
+SQL*Plus: A build-in tool by Oracle for running SQL commands and PL/SQL scripts.
+
+SQL Developer is a graphical user interface (GUI) tool provided by Oracle for interacting with the database. (Same as SQL Server Management Studio or MySQL Workbench.)
+
+SQL Navigator is like SQL Developer but thirt-party tool by Toad.
+
+ORACLE_HOME = This environment variable points to the directory where Oracle is installed on your system. It is critical because it tells the system where to find Oracle binaries and configuration files.
+
+Schemas: A schema in Oracle is essentially a user. It is a collection of database objects owned by a user, including tables, views, indexes, and stored procedures.
+Example: When you log in to Oracle (e.g., system), you’re working within that user's schema.
