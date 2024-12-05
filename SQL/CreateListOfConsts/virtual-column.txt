@@ -1,0 +1,25 @@
+/*
+Virtual Column
+*/
+
+CREATE TABLE constants_table (
+    key_column VARCHAR2(50),
+    value_column VARCHAR2(50) GENERATED ALWAYS AS (
+        CASE
+            WHEN key_column = 'PI' THEN '3.14'
+            WHEN key_column = 'E' THEN '2.71'
+        END
+    ) VIRTUAL
+);
+/
+INSERT INTO constants_table (key_column) VALUES ('PI');
+/
+select * from constants_table;
+/
+drop table constants_table;
+/
+
+/*
+"KEY_COLUMN"	"VALUE_COLUMN"
+"PI"	"3.14"
+*/

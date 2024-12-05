@@ -1,0 +1,24 @@
+/*Create a list of consts
+1: Create a package with consts
+    - Can't test directly with sql query
+    - Only can use inside pl/sql
+2: Create a table (key, value) and a function to get value with key
+    - Highly flexible because it stored in a table
+3: Create a function input key and return value
+    - Can only get value by key, not flexiable like solution 2
+*/
+
+CREATE OR REPLACE FUNCTION fn_const(varname VARCHAR2)
+RETURN VARCHAR2
+IS
+BEGIN
+    IF varname = 'PI' THEN
+        RETURN '3.14';
+    ELSE
+        RETURN varname;
+    END IF;
+END fn_const;
+/
+SELECT fn_const('PI') AS constant_value FROM dual;
+/
+DROP FUNCTION fn_const;
