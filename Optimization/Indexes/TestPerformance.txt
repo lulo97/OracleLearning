@@ -1,0 +1,10 @@
+1. Add large data into table
+SELECT count(*) FROM EMPLOYEES_NO_INDEX;
+39000000
+
+2. Compare 2 select query on index column NAME
+SELECT * FROM EMPLOYEES_NO_INDEX WHERE NAME = 'Employee 124';
+2.625 second
+
+SELECT * FROM EMPLOYEES_INDEX WHERE NAME = 'Employee 124';
+0 second
