@@ -1,0 +1,15 @@
+Best practiss for pick index for a columns:
+- Primary key (already have index when a column is PK)
+- Foreign key
+- Filters column like (name, date...)
+
+CREATE TABLE employees_index (
+    id NUMBER PRIMARY KEY,
+    name VARCHAR2(100),
+    salary NUMBER,
+    department_id NUMBER,
+    hire_date DATE
+);
+-> Add index in NAME column
+
+CREATE INDEX idx_emp_name ON EMPLOYEES_INDEX(NAME);

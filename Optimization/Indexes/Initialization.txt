@@ -1,0 +1,53 @@
+1. Create a table for index and a table for no index
+CREATE TABLE employees_no_index (
+    id NUMBER PRIMARY KEY,
+    name VARCHAR2(100),
+    salary NUMBER,
+    department_id NUMBER,
+    hire_date DATE
+);
+
+CREATE TABLE employees_index (
+    id NUMBER PRIMARY KEY,
+    name VARCHAR2(100),
+    salary NUMBER,
+    department_id NUMBER,
+    hire_date DATE
+);
+
+
+2. Allow permission to allocate space to USERS tablespace to current user
+ALTER USER your_username QUOTA UNLIMITED ON USERS;
+
+3. Generate 1 million rows for both table
+BEGIN
+    FOR i IN 1..1000000 LOOP
+        INSERT INTO employees_no_index (id, name, salary, department_id, hire_date) 
+        VALUES (i, 'Employee ' || i, ROUND(DBMS_RANDOM.VALUE(30000, 100000), 2), 
+                MOD(i, 10) + 1, 
+                TRUNC(SYSDATE - DBMS_RANDOM.VALUE(1, 3650)));
+        
+        -- Commit every 10,000 rows to improve performance
+        IF MOD(i, 10000) = 0 THEN
+            COMMIT;
+        END IF;
+    END LOOP;
+    COMMIT; -- Final commit
+END;
+/
+
+BEGIN
+    FOR i IN 1..1000000 LOOP
+        INSERT INTO employees_index (id, name, salary, department_id, hire_date) 
+        VALUES (i, 'Employee ' || i, ROUND(DBMS_RANDOM.VALUE(30000, 100000), 2), 
+                MOD(i, 10) + 1, 
+                TRUNC(SYSDATE - DBMS_RANDOM.VALUE(1, 3650)));
+        
+        -- Commit every 10,000 rows to improve performance
+        IF MOD(i, 10000) = 0 THEN
+            COMMIT;
+        END IF;
+    END LOOP;
+    COMMIT; -- Final commit
+END;
+/
