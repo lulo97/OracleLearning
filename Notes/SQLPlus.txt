@@ -1,2 +1,3 @@
 Error when login: ORA-12560: TNS:protocol adapter error
 - Solution: Reinstall oracle
+- Solution2: ORADIM -NEW -SID ORCL
