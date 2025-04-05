@@ -26,6 +26,10 @@ CREATE OR REPLACE PACKAGE pkg_cursor_utils IS
         p_col_type PLS_INTEGER
     ) RETURN VARCHAR2;
 
+    FUNCTION fn_total_row (
+        p_cursor IN out SYS_REFCURSOR
+    ) RETURN INTEGER;
+
 END pkg_cursor_utils;
 /
 
@@ -44,18 +48,18 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         l_query           NCLOB := '';
         l_current_row_idx INTEGER := 0;
     BEGIN
-    -- Convert ref cursor to DBMS_SQL cursor number
+        -- Convert ref cursor to DBMS_SQL cursor number
         l_cursor_number := dbms_sql.to_cursor_number(p_cursor);
 
-    -- Describe the columns in the cursor
+        -- Describe the columns in the cursor
         dbms_sql.describe_columns(l_cursor_number, l_total_column, v_desc_tab);
 
-    -- Define columns for each column in the result set
+        -- Define columns for each column in the result set
         FOR i IN 1..l_total_column LOOP
             dbms_sql.define_column(l_cursor_number, i, l_column_value, 32000);
         END LOOP;
 
-    -- Fetch and build the SELECT statements
+        -- Fetch and build the SELECT statements
         WHILE dbms_sql.fetch_rows(l_cursor_number) > 0 LOOP
             IF l_current_row_idx <> 0 THEN
                 l_query := l_query || ' UNION ALL ';
@@ -77,10 +81,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
             l_current_row_idx := l_current_row_idx + 1;
         END LOOP;
 
-    -- Return the constructed query
+        -- Return the constructed query
         p_sql_query := l_query;
 
-    -- Close the cursor
+        -- Close the cursor
         dbms_sql.close_cursor(l_cursor_number);
     EXCEPTION
         WHEN OTHERS THEN
@@ -100,19 +104,25 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         l_column_value  VARCHAR2(32000); --Using varchar2 to work with any kind of data when do DBMS_SQL.DEFINE_COLUMN
         l_row_line      NCLOB;
         l_header_line   NCLOB;
+        l_query         NCLOB;
     BEGIN
-    -- Convert SYS_REFCURSOR to DBMS_SQL cursor number
+        
+        -- Extract query from cursor
+        prc_cursor_to_query(p_cursor, l_query);
+        OPEN p_cursor FOR l_query;
+    
+        -- Convert SYS_REFCURSOR to DBMS_SQL cursor number (cursor will now invalid)
         l_cursor_number := dbms_sql.to_cursor_number(p_cursor);
 
-    -- Get column metadata
+        -- Get column metadata
         dbms_sql.describe_columns(l_cursor_number, l_total_column, v_desc_tab);
 
-    -- Define each column
+        -- Define each column
         FOR i IN 1..l_total_column LOOP
             dbms_sql.define_column(l_cursor_number, i, l_column_value, 4000);
         END LOOP;
 
-    -- Build and print the header line
+        -- Build and print the header line
         FOR i IN 1..l_total_column LOOP
             IF i > 1 THEN
                 l_header_line := l_header_line || ', ';
@@ -122,7 +132,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
 
         dbms_output.put_line(l_header_line);
             
-    -- Loop over all rows and print
+        -- Loop over all rows and print
         WHILE dbms_sql.fetch_rows(l_cursor_number) > 0 LOOP
             l_row_line := '';
             FOR i IN 1..l_total_column LOOP
@@ -131,15 +141,19 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
                     l_row_line := l_row_line || ', ';
                 END IF;
 
-            -- Format value: quote strings, print numbers as-is
+                -- Format value: quote strings, print numbers as-is
                 l_row_line := l_row_line || l_column_value;
             END LOOP;
 
             dbms_output.put_line(l_row_line);
         END LOOP;
 
-    -- Close cursor
+        -- Close cursor
         dbms_sql.close_cursor(l_cursor_number);
+        
+        -- Reopen cursor to preserve data
+        OPEN p_cursor FOR l_query;
+
     EXCEPTION
         WHEN OTHERS THEN
             IF dbms_sql.is_open(l_cursor_number) THEN
@@ -185,6 +199,29 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
                        || ''' AS '
                        || p_col_name;
         END CASE;
+    END;
+    
+    FUNCTION fn_total_row (
+        p_cursor IN out SYS_REFCURSOR
+    ) RETURN INTEGER
+    AS
+        l_query      NCLOB;
+        l_count_query VARCHAR2(32000);
+        l_count      INTEGER;
+    BEGIN
+        prc_cursor_to_query(p_cursor, l_query);
+        
+        if l_query is null then
+            return 0;
+        end if;
+        
+        l_count_query := 'SELECT COUNT(*) FROM (' || l_query || ')';
+        
+        EXECUTE IMMEDIATE l_count_query INTO l_count;
+        
+        open p_cursor for l_query;
+        
+        RETURN l_count;
     END;
 
 END pkg_cursor_utils;

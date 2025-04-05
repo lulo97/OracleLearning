@@ -1,0 +1,65 @@
+To push your package to its limit and test it thoroughly, you should consider testing various edge cases and scenarios that could potentially expose weaknesses or limitations. Here's a set of ideas to stress-test the package and make sure it handles different situations robustly:
+
+### 1. **Large Datasets**
+   - **Multiple Rows in Cursors**: Test the package with cursors that return a large number of rows (e.g., 10,000, 100,000, or more rows). Ensure the package can handle this load without performance degradation or memory issues.
+   - **Multiple Cursors**: Instead of just 3, create a test case that unions 100 or 200 cursors together. This will help you check if your `UNION ALL` is generated efficiently and that the package handles large numbers of cursors.
+   
+### 2. **Different Data Types**
+   - **Edge Case with All Data Types**: Ensure that the package can handle all the various data types in the `EMPLOYEES` table, such as:
+     - Large text fields in the `CLOB` column.
+     - Large numbers in the `SALARY` column, especially edge cases (e.g., `9999999999.99`).
+     - Date and timestamp formats (including leap years, boundary dates like `31-DEC-9999`, etc.).
+     - Negative values and zero for the `SALARY` and `ID` columns.
+   
+   For instance, insert data with edge cases like:
+   ```sql
+   INSERT INTO EMPLOYEES VALUES (4, 'Max Payne', -5000, TO_DATE('31-DEC-1999', 'DD-MON-YYYY'), TO_DATE('29-FEB-2000', 'DD-MON-YYYY'), '1234 Negative Street', TO_TIMESTAMP('31-DEC-99 12:00:00.000000 PM', 'DD-MON-YY HH.MI.SS.FF AM'));
+   ```
+
+### 3. **Empty Data and NULL Values**
+   - **Null Values**: Test the behavior of the `NULL` values in all columns. For example, create employees with `NULL` values in `SALARY`, `ADDRESS`, `HIRED_DATE`, etc., and see if the package handles them without errors.
+   - **Empty CLOB**: Test the `CLOB` field with empty or very large strings.
+
+### 4. **Special Characters and Encoding**
+   - **Special Characters in Strings**: Test with special characters such as quotes (`'`), slashes (`/`), newlines (`\n`), and other non-alphanumeric characters in the `NAME` and `ADDRESS` fields. This will check how the package handles escaping and encoding.
+   - **Unicode Characters**: Insert rows with characters outside of the ASCII range (like Chinese or accented characters) to see how the package handles different encodings in the `NAME` and `ADDRESS` fields.
+
+   Example for testing:
+   ```sql
+   INSERT INTO EMPLOYEES VALUES (5, 'José Pérez', 45000, TO_DATE('20-JAN-2015', 'DD-MON-YYYY'), TO_DATE('15-MAR-1990', 'DD-MON-YYYY'), 'Calle Falsa 123, Ciudad, España', TO_TIMESTAMP('25-DEC-2025 12:00:00.000000 PM', 'DD-MON-YYYY HH.MI.SS.FF AM'));
+   ```
+
+### 5. **Date and Time Boundaries**
+   - **Leap Year**: Test with dates like `29-FEB-2020` or `29-FEB-2024` to ensure the package handles leap years correctly.
+   - **Time Zones**: If applicable, test time zone boundaries in `TIMESTAMP` fields to ensure correct conversion and handling. For example, `TO_TIMESTAMP('31-MAR-2021 01:00:00.000000 AM', 'DD-MON-YYYY HH.MI.SS.FF AM')`.
+
+### 6. **Error Handling**
+   - **Invalid Data Types**: Attempt to pass invalid data types in the cursor (e.g., passing a string in the `SALARY` column). Ensure that proper error messages are raised.
+   - **Invalid Dates**: Provide invalid dates in the input cursors and ensure that your package can gracefully handle exceptions.
+   
+   Example:
+   ```sql
+   INSERT INTO EMPLOYEES VALUES (6, 'Invalid Date', 30000, TO_DATE('31-APR-2021', 'DD-MON-YYYY'), NULL, 'Invalid Address', TO_TIMESTAMP('32-MAR-2021 12:00:00.000000 PM', 'DD-MON-YYYY HH.MI.SS.FF AM'));
+   ```
+
+### 7. **Test Performance**
+   - **Run Multiple Concurrent Queries**: If you're running multiple instances of this package in parallel (with different cursors or datasets), check for any performance issues or concurrency problems.
+   - **Query Execution Time**: Measure how long it takes for the package to process larger result sets (thousands of rows) and optimize where necessary. Consider testing for performance when working with huge `CLOB` or `TIMESTAMP` fields.
+
+### 8. **Cross-Database Compatibility**
+   - **Data Consistency**: Ensure that the data returned by the `UNION ALL` query can be correctly interpreted by external applications or other databases if required. For example, exporting the result of the cursor union to an external tool (like SQL Developer or Excel) and verifying data consistency.
+
+### 9. **Stress Test with Complex Queries**
+   - Create complex queries within the cursors with joins or subqueries, and see how the package handles more sophisticated operations.
+
+   Example:
+   ```sql
+   SELECT e.ID, e.NAME, e.SALARY, e.HIRED_DATE 
+   FROM EMPLOYEES e 
+   JOIN DEPARTMENTS d ON e.ID = d.EMPLOYEE_ID;
+   ```
+
+### 10. **Data with Time Zones**
+   If your database uses time zones, ensure that `TIMESTAMP WITH TIME ZONE` or `TIMESTAMP WITH LOCAL TIME ZONE` columns are handled correctly if included.
+
+By testing these edge cases and scenarios, you’ll be able to push your package to its limits and ensure it can handle a wide range of potential real-world situations.
