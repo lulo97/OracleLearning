@@ -1,0 +1,41 @@
+### ✅ **Requirements for FAST REFRESH ON COMMIT Materialized View**
+1️⃣ **A Pure Function (Deterministic Function)**
+   - If using a function in the `SELECT` clause (e.g., `fn_get_employee_type_DETERMINISTIC`), it **must be deterministic** (i.e., always return the same output for the same input).
+   - Ensure that the function is declared as `DETERMINISTIC`:
+     ```sql
+     CREATE OR REPLACE FUNCTION fn_get_employee_type_DETERMINISTIC(
+       salary NUMBER, department_id NUMBER, hire_date DATE
+     ) RETURN VARCHAR2
+     DETERMINISTIC
+     IS
+     BEGIN
+       -- Function logic here
+     END;
+     ```
+   - **🔹 Note:** The function should **not use non-deterministic values** like `SYSDATE`, `CURRENT_TIMESTAMP`, `DBMS_RANDOM`, etc.
+
+2️⃣ **A Main Table with a Primary Key or ROWID**
+   - The **main table (e.g., `employees_no_index`) must have either**:
+     - A **PRIMARY KEY**  
+     - Or a **ROWID-based MV Log**
+   - If the table **has no primary key**, you **must explicitly use ROWID** in the MV Log.
+
+3️⃣ **A Materialized View Log on the Main Table**
+   - The MV log **tracks changes** in the table and allows **FAST REFRESH**.
+   - Must be created **before** the MV is created:
+     ```sql
+     CREATE MATERIALIZED VIEW LOG ON employees_no_index
+     WITH PRIMARY KEY, ROWID, SEQUENCE
+     INCLUDING NEW VALUES;
+     ```
+   - **🔹 Note:** If the table **has no primary key**, use `WITH ROWID`.
+
+4️⃣ **A Materialized View with FAST REFRESH ON COMMIT**
+   - The MV must be created with:
+     ```sql
+     CREATE MATERIALIZED VIEW vw_employees_no_index_cache
+     REFRESH FAST ON COMMIT
+     AS
+     SELECT e.id, fn_get_employee_type_DETERMINISTIC(e.salary, e.department_id, e.hire_date) AS employee_type
+     FROM employees_no_index e;
+     ```

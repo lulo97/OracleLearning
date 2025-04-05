@@ -1,0 +1,84 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+    v_start NUMBER;
+    v_end NUMBER;
+    v_count NUMBER;
+    v_total_in NUMBER := 0;
+    v_total_exists NUMBER := 0;
+    v_avg_in NUMBER;
+    v_avg_exists NUMBER;
+    i NUMBER;
+BEGIN
+    FOR i IN 1..10 LOOP
+        -- Measure time for Query with IN
+        v_start := DBMS_UTILITY.GET_TIME;
+
+        SELECT COUNT(*) INTO v_count
+        FROM EMPLOYEES_NO_INDEX e
+        WHERE department_id IN (
+            SELECT department_id 
+            FROM DUAL 
+            WHERE e.department_id IN (7, 8, 9)
+        );
+
+        v_end := DBMS_UTILITY.GET_TIME;
+        DBMS_OUTPUT.PUT_LINE('Epoch ' || i || ' - Execution Time (IN query): ' || (v_end - v_start) || ' centiseconds');
+        v_total_in := v_total_in + (v_end - v_start);
+
+        -- Measure time for Query with EXISTS
+        v_start := DBMS_UTILITY.GET_TIME;
+
+        SELECT COUNT(*) INTO v_count
+        FROM EMPLOYEES_NO_INDEX e
+        WHERE EXISTS (
+            SELECT 1 
+            FROM DUAL 
+            WHERE e.department_id IN (7, 8, 9)
+        );
+
+        v_end := DBMS_UTILITY.GET_TIME;
+        DBMS_OUTPUT.PUT_LINE('Epoch ' || i || ' - Execution Time (EXISTS query): ' || (v_end - v_start) || ' centiseconds');
+        v_total_exists := v_total_exists + (v_end - v_start);
+    END LOOP;
+
+    -- Calculate and display averages
+    v_avg_in := v_total_in / 10;
+    v_avg_exists := v_total_exists / 10;
+
+    DBMS_OUTPUT.PUT_LINE('-----------------------------------------');
+    DBMS_OUTPUT.PUT_LINE('Average Execution Time (IN query): ' || v_avg_in || ' centiseconds');
+    DBMS_OUTPUT.PUT_LINE('Average Execution Time (EXISTS query): ' || v_avg_exists || ' centiseconds');
+    DBMS_OUTPUT.PUT_LINE('-----------------------------------------');
+END;
+/
+
+OUTPUT:
+Epoch 1 - Execution Time (IN query): 369 centiseconds
+Epoch 1 - Execution Time (EXISTS query): 297 centiseconds
+Epoch 2 - Execution Time (IN query): 342 centiseconds
+Epoch 2 - Execution Time (EXISTS query): 323 centiseconds
+Epoch 3 - Execution Time (IN query): 488 centiseconds
+Epoch 3 - Execution Time (EXISTS query): 353 centiseconds
+Epoch 4 - Execution Time (IN query): 408 centiseconds
+Epoch 4 - Execution Time (EXISTS query): 309 centiseconds
+Epoch 5 - Execution Time (IN query): 345 centiseconds
+Epoch 5 - Execution Time (EXISTS query): 302 centiseconds
+Epoch 6 - Execution Time (IN query): 365 centiseconds
+Epoch 6 - Execution Time (EXISTS query): 391 centiseconds
+Epoch 7 - Execution Time (IN query): 445 centiseconds
+Epoch 7 - Execution Time (EXISTS query): 339 centiseconds
+Epoch 8 - Execution Time (IN query): 430 centiseconds
+Epoch 8 - Execution Time (EXISTS query): 352 centiseconds
+Epoch 9 - Execution Time (IN query): 398 centiseconds
+Epoch 9 - Execution Time (EXISTS query): 306 centiseconds
+Epoch 10 - Execution Time (IN query): 375 centiseconds
+Epoch 10 - Execution Time (EXISTS query): 366 centiseconds
+-----------------------------------------
+Average Execution Time (IN query): 396.5 centiseconds
+Average Execution Time (EXISTS query): 333.8 centiseconds
+-----------------------------------------
+
+Explanation:
+- EXISTS is condition short-circuits which mean it will return after first encounter TRUE in subquery, EXIST can also faster when work with column indexed
+- IN is retrieves all row in sub query to compute with current row in main query no matter what

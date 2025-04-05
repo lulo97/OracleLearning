@@ -1,0 +1,5 @@
+sqlplus / as sysdba
+
+SELECT instance_name FROM v$instance;
+
+-> orcl = SID

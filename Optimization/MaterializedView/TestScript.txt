@@ -1,0 +1,52 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+    v_start_time NUMBER;
+    v_end_time NUMBER;
+    v_elapsed_1 NUMBER := 0;
+    v_elapsed_2 NUMBER := 0;
+    v_count NUMBER;
+    v_avg_time_1 NUMBER;
+    v_avg_time_2 NUMBER;
+    v_epoch_time_1 NUMBER;
+    v_epoch_time_2 NUMBER;
+    i NUMBER := 1;
+BEGIN
+    FOR i IN 1..10 LOOP
+        DBMS_OUTPUT.PUT_LINE('Epoch ' || i || ' running...');
+
+        -- Measure execution time for Query 1
+        v_start_time := DBMS_UTILITY.get_time;
+        SELECT count(*) INTO v_count 
+        FROM (SELECT * FROM EMPLOYEES_NO_INDEX WHERE rownum < 1000000) e
+        WHERE fn_get_employee_type(e.salary, e.department_id, e.hire_date) = 4;
+        v_end_time := DBMS_UTILITY.get_time;
+        v_epoch_time_1 := (v_end_time - v_start_time) / 100; -- Convert to seconds
+        v_elapsed_1 := v_elapsed_1 + v_epoch_time_1;
+
+        DBMS_OUTPUT.PUT_LINE('Epoch ' || i || ' - Query 1 Execution Time: ' || v_epoch_time_1 || ' seconds');
+
+        -- Measure execution time for Query 2
+        v_start_time := DBMS_UTILITY.get_time;
+        SELECT count(*) INTO v_count
+        FROM (SELECT * FROM EMPLOYEES_NO_INDEX WHERE rownum < 1000000) e
+        LEFT JOIN vw_employees_no_index_cache_on_commit ve ON e.id = ve.id
+        WHERE ve.employee_type = 4;
+        v_end_time := DBMS_UTILITY.get_time;
+        v_epoch_time_2 := (v_end_time - v_start_time) / 100; -- Convert to seconds
+        v_elapsed_2 := v_elapsed_2 + v_epoch_time_2;
+
+        DBMS_OUTPUT.PUT_LINE('Epoch ' || i || ' - Query 2 Execution Time: ' || v_epoch_time_2 || ' seconds');
+    END LOOP;
+
+    -- Compute average execution time
+    v_avg_time_1 := v_elapsed_1 / 10;
+    v_avg_time_2 := v_elapsed_2 / 10;
+
+    -- Display results
+    DBMS_OUTPUT.PUT_LINE('==========================');
+    DBMS_OUTPUT.PUT_LINE('Average Execution Time for Query 1: ' || v_avg_time_1 || ' seconds');
+    DBMS_OUTPUT.PUT_LINE('Average Execution Time for Query 2: ' || v_avg_time_2 || ' seconds');
+    DBMS_OUTPUT.PUT_LINE('==========================');
+END;
+/

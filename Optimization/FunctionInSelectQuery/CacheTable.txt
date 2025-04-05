@@ -1,0 +1,9 @@
+Create a cache table have 2 column
+- Id for primary key of original table
+- Value for function compute value
+
+Left join cache table with original table for faster execute
+
+SELECT * FROM EMPLOYEES_NO_INDEX e
+left join EMPLOYEES_function_cache ec on e.id = ec.employee_id
+where ec.employee_type = 4

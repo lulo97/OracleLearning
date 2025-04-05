@@ -1,0 +1,9 @@
+SELECT * FROM (select * from EMPLOYEES_NO_INDEX WHERE rownum < 1000000) e
+WHERE fn_get_employee_type(e.salary, e.department_id, e.hire_date) = 1;
+-> Run after 6 second
+
+SELECT * FROM EMPLOYEES_NO_INDEX e
+WHERE 
+    rownum < 1000000 and
+    fn_get_employee_type(e.salary, e.department_id, e.hire_date) = 1;
+-> Run very long time

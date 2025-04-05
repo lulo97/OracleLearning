@@ -1,0 +1,2 @@
+Using DETERMINISTIC in function
+
