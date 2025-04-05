@@ -1,0 +1,17 @@
+RMAN> BACKUP DATABASE;
+
+Starting backup at 03-APR-25
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=537 device type=DISK
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of backup command at 04/03/2025 20:20:08
+RMAN-06149: cannot BACKUP DATABASE in NOARCHIVELOG mode
+
+RMAN-06149: cannot BACKUP DATABASE in NOARCHIVELOG mode
+- Can't backup database when mode = NOARCHIVELOG
+- Which mean can't backup when database is running
+- Solution:
+    + Hot backup (enable ARCHIVELOG mode)
+    + Cool backup (shutdown database to backup)

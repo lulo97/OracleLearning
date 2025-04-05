@@ -1,0 +1,3 @@
+RMAN> LIST BACKUP;
+
+specification does not match any backup in the repository

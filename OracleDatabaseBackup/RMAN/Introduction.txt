@@ -1,0 +1,5 @@
+RMAN = Oracle database recovery manager
+
+Components:
+- RMAN client: Command-line
+- Target database: Database want to backup or recover

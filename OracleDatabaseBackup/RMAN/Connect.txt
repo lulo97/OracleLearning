@@ -1,0 +1,21 @@
+rman target / 
+- Connect to local database
+
+rman target "CBOND/CBOND@192.168.26.39:1521/db"
+- Connect to remote database
+- IP = 192.168.26.39
+- Port = 1521
+- Service = db
+- Username = CBOND
+- Password = CBOND
+
+Example:
+
+C:\Users\admin>rman target /
+
+Recovery Manager: Release 18.0.0.0.0 - Production on Thu Apr 3 20:17:55 2025
+Version 18.4.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: XE (DBID=3073691976)
