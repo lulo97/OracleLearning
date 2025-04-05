@@ -62,7 +62,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
                 IF i > 1 THEN
                     l_query := l_query || ', ';
                 END IF;
-                dbms_output.put_line(v_desc_tab(i).col_type);
                 
                 -- Detect column type and format accordingly
                 l_query := l_query || fn_format_column_value(l_column_value, v_desc_tab(i).col_name, v_desc_tab(i).col_type);
