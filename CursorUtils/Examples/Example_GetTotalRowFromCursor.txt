@@ -1,0 +1,8 @@
+DECLARE
+    l_cursor SYS_REFCURSOR;
+    l_query  NCLOB;
+BEGIN
+    OPEN l_cursor FOR SELECT * FROM dual;
+    
+    DBMS_OUTPUT.PUT_LINE(pkg_cursor_utils.fn_total_row(l_cursor));
+END;

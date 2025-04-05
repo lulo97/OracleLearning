@@ -1,0 +1,8 @@
+DECLARE
+    l_cursor SYS_REFCURSOR;
+    l_query  NCLOB;
+BEGIN
+    OPEN l_cursor FOR SELECT 1 as ID, 'Luong' as name FROM dual where 1 = 1;
+    
+    pkg_cursor_utils.prc_print(l_cursor);
+END;

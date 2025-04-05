@@ -1,0 +1,39 @@
+set serveroutput on;
+
+DECLARE
+    l_cursor SYS_REFCURSOR;
+    l_table  key_value_table;
+BEGIN
+    -- Open the cursor with your query
+    OPEN l_cursor FOR 'SELECT * FROM employees';  -- Example query, replace with your own
+    
+    -- Call the function to process the cursor and get the key-value table
+    l_table := pkg_cursor_utils.fn_cursor_to_table(l_cursor);
+    
+    -- Optionally: Debug output
+    FOR i IN 1 .. l_table.count LOOP
+        dbms_output.put_line('Row ' || l_table(i).key || ': ' || l_table(i).value);
+    END LOOP;
+
+    -- You can now use l_table in your query as needed
+    OPEN l_cursor FOR
+        SELECT * FROM employees e
+        JOIN 
+            TABLE(l_table) tbl_kv ON pkg_cursor_utils.fn_get_row_value(tbl_kv.value, 'id') = e.id
+                and pkg_cursor_utils.fn_get_row_value(tbl_kv.value, 'name') = e.name
+                and pkg_cursor_utils.fn_get_row_value(tbl_kv.value, 'HIRED_DATE') = e.HIRED_DATE
+                and pkg_cursor_utils.fn_get_row_value(tbl_kv.value, 'JOINED_AT') = e.JOINED_AT
+        WHERE 
+            e.id = 1;
+
+    pkg_cursor_utils.prc_print(l_cursor);
+    DBMS_OUTPUT.PUT_LINE('Total l_cursor row = ' || pkg_cursor_utils.fn_total_row(l_cursor));
+END;
+
+------------------OUTPUT------------------
+Row 1: ID~$~1~#~NAME~$~John Doe~#~SALARY~$~50000~#~HIRED_DATE~$~01-MAR-22~#~BIRTHDATE~$~15-JUN-90~#~ADDRESS~$~1234 Elm Street, City, Country~#~JOINED_AT~$~05-APR-25 04.49.04.033000000 PM
+Row 2: ID~$~2~#~NAME~$~Jane Smith~#~SALARY~$~60000~#~HIRED_DATE~$~15-JUL-21~#~BIRTHDATE~$~22-NOV-85~#~ADDRESS~$~5678 Oak Avenue, City, Country~#~JOINED_AT~$~05-APR-25 04.49.04.062000000 PM
+Row 3: ID~$~3~#~NAME~$~Alice Johnson~#~SALARY~$~55000~#~HIRED_DATE~$~10-SEP-20~#~BIRTHDATE~$~05-JAN-92~#~ADDRESS~$~9101 Pine Road, City, Country~#~JOINED_AT~$~05-APR-25 04.49.04.076000000 PM
+ID, NAME, SALARY, HIRED_DATE, BIRTHDATE, ADDRESS, JOINED_AT, KEY, VALUE
+1, John Doe, 50000, 01-MAR-22, 15-JUN-90, 1234 Elm Street, City, Country, 05-APR-25 04.49.04.033000000 PM, 1, ID~$~1~#~NAME~$~John Doe~#~SALARY~$~50000~#~HIRED_DATE~$~01-MAR-22~#~BIRTHDATE~$~15-JUN-90~#~ADDRESS~$~1234 Elm Street, City, Country~#~JOINED_AT~$~05-APR-25 04.49.04.033000000 PM
+Total l_cursor row = 1
