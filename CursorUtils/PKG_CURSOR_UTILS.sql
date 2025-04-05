@@ -7,6 +7,10 @@ CREATE OR REPLACE PACKAGE pkg_cursor_utils IS
     c_type_clob CONSTANT PLS_INTEGER := 112;
     c_type_timestamp CONSTANT PLS_INTEGER := 180;
     
+    -- Date format
+    c_date_format CONSTANT VARCHAR2(200) := 'DD-MM-YYYY';
+    c_timestamp_format CONSTANT VARCHAR2(200) := 'DD-MON-YY HH.MI.SS.FF AM';
+    --
     PROCEDURE prc_cursor_to_query (
         p_cursor    IN OUT SYS_REFCURSOR,
         p_sql_query OUT NCLOB
@@ -64,7 +68,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
                 END IF;
                 
                 -- Detect column type and format accordingly
-                l_query := l_query || fn_format_column_value(l_column_value, v_desc_tab(i).col_name, v_desc_tab(i).col_type);
+                l_query := l_query
+                           || fn_format_column_value(l_column_value, v_desc_tab(i).col_name, v_desc_tab(i).col_type);
 
             END LOOP;
 
@@ -116,7 +121,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         END LOOP;
 
         dbms_output.put_line(l_header_line);
-
+            
     -- Loop over all rows and print
         WHILE dbms_sql.fetch_rows(l_cursor_number) > 0 LOOP
             l_row_line := '';
@@ -158,12 +163,16 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
             WHEN c_type_date THEN
                 RETURN 'TO_DATE('''
                        || replace(p_value, '''', '''''')
-                       || ''', ''YYYY-MM-DD HH24:MI:SS'') AS '
+                       || ''', '''
+                       || c_date_format
+                       || ''') AS '
                        || p_col_name;
             WHEN c_type_timestamp THEN
                 RETURN 'TO_TIMESTAMP('''
                        || replace(p_value, '''', '''''')
-                       || ''', ''YYYY-MM-DD HH24:MI:SS.FF'') AS '
+                       || ''', '''
+                       || c_timestamp_format
+                       || ''') AS '
                        || p_col_name;
             WHEN c_type_clob THEN
                 RETURN 'TO_CLOB('''
