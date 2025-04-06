@@ -1,0 +1,38 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+  cursor_id        INTEGER;
+  sql_stmt         VARCHAR2(1000);
+  l_column_value   VARCHAR2(4000);
+  col_count        INTEGER;
+  col_desc         DBMS_SQL.DESC_TAB;
+  col_num          INTEGER;
+  rows_processed   INTEGER;
+BEGIN
+  cursor_id := DBMS_SQL.OPEN_CURSOR;
+  sql_stmt := 'SELECT * FROM employees WHERE id = :p_id';
+
+  DBMS_SQL.PARSE(cursor_id, sql_stmt, DBMS_SQL.NATIVE);
+  DBMS_SQL.BIND_VARIABLE(cursor_id, ':p_id', 1);
+
+  -- FIX: Use proper parameters for DESCRIBE_COLUMNS
+  DBMS_SQL.DESCRIBE_COLUMNS(cursor_id, col_count, col_desc);
+
+  -- Define each column dynamically as VARCHAR2
+  FOR col_num IN 1 .. col_count LOOP
+    DBMS_SQL.DEFINE_COLUMN(cursor_id, col_num, l_column_value, 4000);
+  END LOOP;
+
+  rows_processed := DBMS_SQL.EXECUTE(cursor_id);
+
+  IF DBMS_SQL.FETCH_ROWS(cursor_id) > 0 THEN
+    FOR col_num IN 1 .. col_count LOOP
+      DBMS_SQL.COLUMN_VALUE(cursor_id, col_num, l_column_value);
+      DBMS_OUTPUT.PUT_LINE(col_desc(col_num).col_name || ': ' || l_column_value);
+    END LOOP;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('No rows found.');
+  END IF;
+
+  DBMS_SQL.CLOSE_CURSOR(cursor_id);
+END;
