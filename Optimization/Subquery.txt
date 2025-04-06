@@ -7,3 +7,5 @@ WHERE
     rownum < 1000000 and
     fn_get_employee_type(e.salary, e.department_id, e.hire_date) = 1;
 -> Run very long time
+
+--IMPORTANT: Subquery speed is no different if using simple function, must use very complex function to know different
