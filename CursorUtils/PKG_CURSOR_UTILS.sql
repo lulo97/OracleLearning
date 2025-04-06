@@ -43,9 +43,9 @@ CREATE OR REPLACE PACKAGE pkg_cursor_utils IS
         p_column_name IN VARCHAR2
     ) RETURN VARCHAR2;
 
-    procedure prc_handle_no_record_cursor(
-        p_cursor           IN OUT SYS_REFCURSOR
-    );
+--    procedure prc_handle_no_record_cursor(
+--        p_cursor           IN OUT SYS_REFCURSOR
+--    );
 
 END pkg_cursor_utils;
 /
@@ -97,6 +97,18 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
             l_query := l_query || ' FROM dual';
             l_current_row_idx := l_current_row_idx + 1;
         END LOOP;
+        
+        IF l_query IS NULL THEN
+            l_query := 'SELECT ';
+            
+            FOR i IN 1..l_total_column LOOP
+                l_query := l_query || 'NULL AS ' || v_desc_tab(i).col_name || ',';
+            END LOOP;
+            
+            l_query := RTRIM(l_query, ',');
+            
+            l_query := l_query || ' FROM DUAL WHERE 1 = 0';
+        END IF;
 
         -- Return the constructed query
         p_sql_query := l_query;
@@ -127,10 +139,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         -- Extract query from cursor
         prc_cursor_to_query(p_cursor, l_query);
         
-        if l_query is null then
-            prc_handle_no_record_cursor(p_cursor);
-            return;
-        end if;
+--        if l_query is null then
+--            prc_handle_no_record_cursor(p_cursor);
+--            return;
+--        end if;
         
         OPEN p_cursor FOR l_query;
     
@@ -235,10 +247,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         
         prc_cursor_to_query(p_cursor, l_query);
                 
-        if l_query is null then
-            prc_handle_no_record_cursor(p_cursor);
-            return 0;
-        end if;
+--        if l_query is null then
+--            prc_handle_no_record_cursor(p_cursor);
+--            return 0;
+--        end if;
         
         l_count_query := 'SELECT COUNT(*) FROM (' || l_query || ')';
                         
@@ -264,10 +276,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
     BEGIN
         prc_cursor_to_query(p_cursor, l_query);
     
-        if l_query is null then
-            prc_handle_no_record_cursor(p_cursor);
-            return l_table;
-        end if;
+--        if l_query is null then
+--            prc_handle_no_record_cursor(p_cursor);
+--            return l_table;
+--        end if;
     
         OPEN p_cursor FOR l_query;
     
@@ -358,20 +370,20 @@ CREATE OR REPLACE PACKAGE BODY pkg_cursor_utils IS
         RETURN NULL;
     END;
     
-    PROCEDURE prc_handle_no_record_cursor(
-        p_cursor IN OUT SYS_REFCURSOR
-    ) AS 
-    BEGIN
-        dbms_output.put_line('Cursor has no records');
-    
-        IF p_cursor%ISOPEN THEN
-            CLOSE p_cursor;
-            p_cursor := NULL;
-        END IF;
-    
-        OPEN p_cursor FOR SELECT * FROM dual WHERE 1 = 0; 
-    
-    END prc_handle_no_record_cursor;
+--    PROCEDURE prc_handle_no_record_cursor(
+--        p_cursor IN OUT SYS_REFCURSOR
+--    ) AS 
+--    BEGIN
+--        dbms_output.put_line('Cursor has no records');
+--    
+--        IF p_cursor%ISOPEN THEN
+--            CLOSE p_cursor;
+--            p_cursor := NULL;
+--        END IF;
+--    
+--        OPEN p_cursor FOR SELECT * FROM dual WHERE 1 = 0; 
+--    
+--    END prc_handle_no_record_cursor;
 
     
 END pkg_cursor_utils;
